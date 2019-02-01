@@ -32,8 +32,15 @@ def res_(chanIn, chanOut, ks=1, stride=1):
         
         
 class Att_Net(nn.Module):
-    def __init__(self, input_size):
+    
+    '''
+    input_size: the filter size 
+    model_type: can be 'model2', model3,'model5'
+    
+    '''
+    def __init__(self, input_size, model_type):
         self.chn = input_size
+        self.model_type = model_type
         super().__init__()
         self.input_conv1 = nn.Conv2d(1,self.chn,3,1,1)
         self.block1_res1 = res_(self.chn, self.chn)        
@@ -44,21 +51,20 @@ class Att_Net(nn.Module):
         
         self.block3_res3 = res_(self.chn*2, self.chn*4,ks=1,stride=2)        
         self.block3 = bn_relu(self.chn*2, self.chn*4,ks=3,stride=2)
-#        
-#        
-#        self.block2 = bn_relu(self.chn, self.chn*2,3,2) #down
-#        self.block2_res = nn.Conv2d(self.chn, self.chn*2,1,2, padding=0)
-#        
-#        self.block3 = bn_relu(self.chn*2, self.chn*4, 3,2)
-#        self.block3_res = nn.Conv2d(self.chn*2, self.chn*4,1,2, padding=0)
+
         self.bn = nn.BatchNorm2d(self.chn*4,momentum=.997)
-        self.mid = MultiHeadAttention(self.chn*4,self.chn*4,32,32,8)
         
         
+#        self.mid_mod1 = nn.Conv2d(self.chn*4, self.chn*4,3,stride=1,padding=1)
+        self.mid_mod2 = nn.Conv2d(self.chn*4, self.chn*4,3,stride=1,padding=1)
+        self.mid_mod5 = MultiHeadAttention(self.chn*4,self.chn*4,128,128,8)
         
+        
+        self.up2_att = MultiHeadAttention(self.chn*4,self.chn*2,64,64,8,'UP')
         self.up2 = nn.ConvTranspose2d(self.chn*4, self.chn*2, 3,2, padding=1, output_padding=1)
         self.up2_1 = bn_relu(self.chn*2,self.chn*2, 3,1,1)
-
+        
+        self.up1_att = MultiHeadAttention(self.chn*2,self.chn,32,32,8,'UP')
         self.up1 = nn.ConvTranspose2d(self.chn*2, self.chn, 3,2, padding=1, output_padding=1)
         self.up1_1 = bn_relu(self.chn,self.chn,3,1,1)
 #         self.up1m = MultiHeadAttention_(32,32,12,12,4)
@@ -94,24 +100,30 @@ class Att_Net(nn.Module):
         
 #       res3 shape  torch.Size([32, 128, 12, 12])
         x = self.bn(res3)
-        x = self.mid(res3)
-        
+        if self.model_type=='model2':
+            x = self.mid_mod2(x)
+        elif self.model_type == 'model5' or self.model_type == 'model3':
+            x = self.mid_mod5(x)
+            
 #        print('out mid: ', x.shape)
         
-        x = self.up2(x)    
+        if self.model_type == 'model3':
+            x = self.up2_att(x)
+        else:
+            x = self.up2(x)    
 #        print('out transpose ', x.shape)
         x = torch.add(x, res2)
 #        print('x after add ', x.shape)
         x_l = self.up2_1(x)
-        x_out = torch.add(x_l,x)
+        x_out = torch.add(x_l,x)    
         
-        
-        
+#        if self.model_type == 'model3':
+#            x = self.up1_att(x_out)
+#        else:
         x = self.up1(x_out)
         x = torch.add(x, res1)
         x_l = self.up1_1(x)
         x_out = torch.add(x_l,x)
-        
         
         x = self.out_bn(x_out)
         x = self.drop(x)

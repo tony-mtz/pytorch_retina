@@ -70,9 +70,9 @@ class MultiHeadAttention(nn.Module):
         output: [batch, chn, h,w]
         next step, permute to [batch, h,w, chn]
         '''
-        self.q = compute_qkv(chanIn, total_key_filters,'q',layer_type='SAME')
-        self.k = compute_qkv(chanIn, total_key_filters,'k',layer_type='SAME')
-        self.v = compute_qkv(chanIn, total_value_filters,'v',layer_type='SAME')
+        self.q = compute_qkv(chanIn, total_key_filters,'q',layer_type=layer_type)
+        self.k = compute_qkv(chanIn, total_key_filters,'k',layer_type=layer_type)
+        self.v = compute_qkv(chanIn, total_value_filters,'v',layer_type=layer_type)
         
         self.num_heads = num_heads
         self.total_key_filters = total_key_filters
@@ -149,7 +149,7 @@ def compute_qkv(chanIn,filters, qkv,layer_type='SAME'):
         elif layer_type == 'DOWN':
             qkv = nn.Conv2d(chanIn, filters, 3, 2, bias=True, padding =1)
         elif layer_type == 'UP':
-            qkv = nn.ConvTranspose2d(chanIn, filtersx, 3, 2, bias=True, padding=1)
+            qkv = nn.ConvTranspose2d(chanIn, filters, 3, 2, bias=True, padding=1)
     
     if qkv == 'k':
         # linear transformation for k
