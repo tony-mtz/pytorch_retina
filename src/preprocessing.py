@@ -16,7 +16,7 @@ from help_functions import *
 from extract_patches import get_data_training
 
 #function to obtain data for training/testing (validation)
-def preprocessing():
+def preprocessing(exp_path):
     from extract_patches import get_data_training
     sys.path.insert(0, '../lib/networks/')
 #    from fully_conv import get_fully_conv_unet as unet
@@ -33,7 +33,7 @@ def preprocessing():
     
     
     # [experiment name]
-    name_experiment = 'test'
+    name_experiment = exp_path
     
     
     # [data attributes]

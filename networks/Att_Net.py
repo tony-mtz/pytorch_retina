@@ -154,7 +154,7 @@ class Model_B_E(nn.Module):
         return x
         
 class Model_B_C_E(nn.Module):
-    def __init__(self, input_size):
+    def __init__(self, input_size, heads):
         super().__init__()
         self.chn = input_size
         self.input_conv1 = nn.Conv2d(1,self.chn,kernel_size=3,stride=1,padding=1)
@@ -162,7 +162,7 @@ class Model_B_C_E(nn.Module):
         self.block_2 = Block_B(self.chn, self.chn*2, stride=2, padding=1)
         self.block_3 = Block_B(self.chn*2, self.chn*4, stride=2, padding=1)
         
-        self.bottom = Block_C(self.chn*4, self.chn*4,self.chn*4, self.chn*4, 2)
+        self.bottom = Block_C(self.chn*4, self.chn*4, heads)
         
         self.block4 = Block_E(self.chn*4, self.chn*2, skip=None)
         self.block5 = Block_E(self.chn*2, self.chn, skip=None)
@@ -190,7 +190,7 @@ class Model_B_C_E(nn.Module):
         return x
     
 class Model_B_C_D_E(nn.Module):
-    def __init__(self, input_size):
+    def __init__(self, input_size,heads):
         super().__init__()
         self.chn = input_size
         self.input_conv1 = nn.Conv2d(1,self.chn,kernel_size=3,stride=1,padding=1)
@@ -198,9 +198,9 @@ class Model_B_C_D_E(nn.Module):
         self.block_2 = Block_B(self.chn, self.chn*2, stride=2, padding=1)
         self.block_3 = Block_B(self.chn*2, self.chn*4, stride=2, padding=1)
         
-        self.bottom = Block_C(self.chn*4, self.chn*4, 16)
+        self.bottom = Block_C(self.chn*4, self.chn*4, heads)
         
-        self.block4 = Block_D(self.chn*4, self.chn*2, 16,skip=None)
+        self.block4 = Block_D(self.chn*4, self.chn*2, heads,skip=None)
         self.block5 = Block_E(self.chn*2, self.chn, skip=None)
         self.out = out_block(self.chn)
         
