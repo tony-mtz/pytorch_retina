@@ -149,7 +149,7 @@ def compute_qkv(chanIn,filters, qkv,layer_type='SAME'):
         elif layer_type == 'DOWN':
             qkv = nn.Conv2d(chanIn, filters, 3, 2, bias=True, padding =1)
         elif layer_type == 'UP':
-            qkv = nn.ConvTranspose2d(chanIn, filters, 3, 2, bias=True, padding=1)
+            qkv = nn.ConvTranspose2d(chanIn, filters, 3, 2, bias=True, padding=1,output_padding=1)
     
     if qkv == 'k':
         # linear transformation for k
