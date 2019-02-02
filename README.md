@@ -1,2 +1,2 @@
-# pytorch_retina
+# pytorch_retina with attention modules
 retina
