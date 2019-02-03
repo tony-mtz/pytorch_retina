@@ -44,7 +44,7 @@ import pandas as pd
 
 import sys
 sys.path.insert(0, '../networks/')
-from Att_Net import Att_Net
+from Att_Net import *
 # from help_functions import *
 
 # #function to obtain data for training/testing (validation)
@@ -54,18 +54,21 @@ from Att_Net import Att_Net
 from preprocessing import preprocessing
 
 
-#set a few things
-save_path = 'expr/model2_exp1/'
-modeltype = 'model2'
+#===============#set a few things====================================
+save_path = 'expr/b_c_d_e/exp1_2heads/'
+exp_path = 'src/'+save_path
+model = Model_B_C_D_E(32,2)
+model.cuda()
+
+#====================================================================
 
 
-
-train_img, label_img = preprocessing()
+train_img, label_img = preprocessing(exp_path)
 
 
 N_subimgs = 190000
 indices = list(range(N_subimgs))
-np.random.shuffle(indices)
+#np.random.shuffle(indices)
 
 val_size = 1/10
 split = np.int_(np.floor(val_size * N_subimgs))
@@ -126,8 +129,7 @@ val_loader = torch.utils.data.DataLoader(dataset=eye_dataset_val,
                                            shuffle=True)
 
 
-model = Att_Net(32,modeltype)
-model.cuda()
+
 # criterion = nn.BCEWithLogitsLoss()
 criterion = nn.CrossEntropyLoss()
 learning_rate = 0.001
@@ -136,8 +138,7 @@ optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, eps=.1,
                              weight_decay=.000001)
 
 scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer=optimizer, 
-                                                 milestones=[400,800,1200], gamma=0.1)
-
+                                                 milestones=[400,800,900], gamma=0.1)
 
 def accuracy(out, labels):
     total = 0.0
@@ -155,7 +156,7 @@ mean_train_acc = []
 mean_val_acc = []
 minLoss = 99999
 maxValacc = -99999
-for epoch in range(2000):
+for epoch in range(1000):
     scheduler.step()
     print('EPOCH: ',epoch+1)
 #     train_losses = []
@@ -221,13 +222,13 @@ for epoch in range(2000):
     
    
     if mean_val_loss < minLoss:
-        torch.save(model.state_dict(), save_path+'att_res_torch_190k_.pth' )
+        torch.save(model.state_dict(), save_path+'best_loss.pth' )
         print(f'NEW BEST Loss: {mean_val_loss} ........old best:{minLoss}')
         minLoss = mean_val_loss
         print('')
     
     if (epoch+1)%100 ==0:
-        torch.save(model.state_dict(), save_path+'att_res_torch_190k_'+str(epoch+1)+'.pth')
+        torch.save(model.state_dict(), save_path+'epoch_'+str(epoch+1)+'.pth')
         
         
     if val_acc_ > maxValacc:
