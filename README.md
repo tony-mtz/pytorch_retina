@@ -4,6 +4,6 @@ This project is a combination of [orobix](https://github.com/orobix/retina-unet)
 <br>
 <br>
 | Network     | Patch Size |Channels   |Batch size | Optimizer LR |AUC   | 
-|-------------|------------|-----------|-----------|--------------|------|
+| ----------- | ---------- | --------- | --------- | ------------ | ---- |
 | Model_B_E   | 48x48      | 16        |64         | Adam .001    |.9756 |
 
