@@ -3,6 +3,7 @@ This project is a combination of [orobix](https://github.com/orobix/retina-unet)
 
 <br>
 <br>
+## Experimental Results ##
 
  Network     | Patch Size | Channels   | Batch size | Optimizer LR | AUC   
  ----------- | ---------- | ---------- | ---------- | ------------ | ---- 
@@ -10,9 +11,6 @@ This project is a combination of [orobix](https://github.com/orobix/retina-unet)
 
 <br>
 <br>
-## Experimental Results
-<br>
-First Header  | Second Header
-------------- | -------------
-Content Cell  | Content Cell
-Content Cell  | Content Cell
+
+
+
