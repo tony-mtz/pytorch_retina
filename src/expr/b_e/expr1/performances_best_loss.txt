@@ -1,0 +1,17 @@
+network model_b_e
+channels 16
+lr .001 
+epochs 200
+
+
+Area under the ROC curve: 0.9748653374579351
+Area under Precision-Recall curve: 0.8942951910575617
+Jaccard similarity score: 0.9517626482902809
+F1 score (F-measure): 0.7940623641792617
+
+Confusion matrix:[[3897198   63296]
+ [ 155612  422037]]
+ACCURACY: 0.9517626482902809
+SENSITIVITY: 0.730611495908415
+SPECIFICITY: 0.9840181553109284
+PRECISION: 0.8695823280098407
